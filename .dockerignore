@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.github
+.nx
+.vscode
+
+coverage
+
+Dockerfile
+
+**/*.log
