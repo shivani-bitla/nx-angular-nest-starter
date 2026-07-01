@@ -1,9 +1,6 @@
-# docker-compose.yml
-
 services:
   postgres:
     image: postgres:17
-
     restart: unless-stopped
 
     environment:
@@ -20,7 +17,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: api/Dockerfile
+      dockerfile: infra/docker/api.Dockerfile
 
     ports:
       - "3000:3000"
@@ -32,6 +29,17 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/fullstack?schema=public
       PORT: 3000
       CORS_ORIGIN: http://localhost:4200
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+
+    ports:
+      - "4200:80"
+
+    depends_on:
+      - api
 
 volumes:
   postgres-data:

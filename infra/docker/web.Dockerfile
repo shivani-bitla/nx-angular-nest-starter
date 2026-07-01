@@ -13,7 +13,7 @@ RUN npm install
 RUN npx nx build web
 
 # ---------- Runtime Stage ----------
-FROM nginx:alpine
+FROM nginx:1.29-alpine
 
 COPY --from=builder /app/dist/web/browser /usr/share/nginx/html
 
