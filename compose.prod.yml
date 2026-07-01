@@ -1,14 +1,14 @@
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest
-  
+
     restart: unless-stopped
-  
+
     command: tunnel --config /etc/cloudflared/config.yml run
-  
+
     volumes:
       - ./infra/cloudflare:/etc/cloudflared
-  
+
     depends_on:
       - caddy
   caddy:
@@ -45,7 +45,7 @@ services:
       - postgres
 
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/fullstack?schema=public
+      DATABASE_URL: ${DATABASE_URL}
       PORT: 3000
       CORS_ORIGIN: http://localhost
 

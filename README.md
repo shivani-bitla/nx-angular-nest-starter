@@ -279,3 +279,9 @@ This project uses Nx to:
 # License
 
 MIT License
+
+
+environment:
+  DATABASE_URL: ${DATABASE_URL}
+
+  DATABASE_URL=postgresql://postgres:postgres@postgres:5432/fullstack?schema=public
