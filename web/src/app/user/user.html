@@ -1,0 +1,56 @@
+<div class="container">
+
+  <h1>User Management</h1>
+
+  <form [formGroup]="form" (ngSubmit)="createUser()">
+
+    <label for="name">Name</label>
+
+    <input
+      id="name"
+      type="text"
+      formControlName="name"
+      placeholder="Enter a suitable name"
+    />
+
+    <button type="submit" [disabled]="form.invalid">
+      Create User
+    </button>
+
+  </form>
+
+  <hr />
+
+  <h2>Users</h2>
+
+  <table>
+
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Id</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      @for (user of users; track user.id; let i = $index) {
+
+        <tr>
+
+          <td>{{ i + 1 }}</td>
+
+          <td>{{ user.name }}</td>
+
+          <td>{{ user.id }}</td>
+
+        </tr>
+
+      }
+
+    </tbody>
+
+  </table>
+
+</div>
