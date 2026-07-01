@@ -6,7 +6,7 @@ services:
       - "80:80"
 
     volumes:
-      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./infra/caddy/Caddyfile.dev:/etc/caddy/Caddyfile:ro
 
     depends_on:
       - api
