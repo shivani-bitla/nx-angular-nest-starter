@@ -1,4 +1,16 @@
 services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+  
+    restart: unless-stopped
+  
+    command: tunnel --config /etc/cloudflared/config.yml run
+  
+    volumes:
+      - ./infra/cloudflare:/etc/cloudflared
+  
+    depends_on:
+      - caddy
   caddy:
     image: caddy:2-alpine
 
