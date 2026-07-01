@@ -2,7 +2,6 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { User, CreateUserDto } from "shared";
-import { environment } from "../environments/environment";
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +10,7 @@ export class UserService {
 
   private readonly http = inject(HttpClient);
 
-  private readonly url = `${environment.apiUrl}/api/users`;
+  private readonly url = '/api/users';
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.url);

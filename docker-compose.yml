@@ -1,4 +1,16 @@
 services:
+  caddy:
+    image: caddy:2-alpine
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile
+
+    depends_on:
+      - api
+      - web
   postgres:
     image: postgres:17
     restart: unless-stopped
@@ -19,24 +31,18 @@ services:
       context: .
       dockerfile: infra/docker/api.Dockerfile
 
-    ports:
-      - "3000:3000"
-
     depends_on:
       - postgres
 
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/fullstack?schema=public
       PORT: 3000
-      CORS_ORIGIN: http://localhost:4200
+      CORS_ORIGIN: http://localhost
 
   web:
     build:
       context: .
       dockerfile: infra/docker/web.Dockerfile
-
-    ports:
-      - "4200:80"
 
     depends_on:
       - api
