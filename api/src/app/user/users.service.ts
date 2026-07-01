@@ -1,33 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from 'shared';
-import { User } from 'shared';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [];
+  constructor(private prisma: PrismaService) {}
 
-  create(createUserDto: CreateUserDto): User {
-    const user: User = {
-      id: crypto.randomUUID(),
-      name: createUserDto.name,
-      // createdAt: new Date(),
-    };
-
-    this.users.push(user);
-
-    return user;
+  async create(dto: CreateUserDto) {
+    return this.prisma.user.create({
+      data: dto,
+    });
   }
 
-  findAll(): User[] {
-    return this.users;
+  async findAll() {
+    return this.prisma.user.findMany({
+      orderBy: { name: 'asc' },
+    });
   }
 
-  findOne(id: string): User | undefined {
-    return this.users.find((user) => user.id === id);
+  async findOne(id: string) {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
+  async findUnique(id: string){
+    const user = await this.prisma.user.findUnique({
+  where: { id },
+});
+
+if (!user) {
+  throw new NotFoundException('User not found');
+}
+
+return user;
   }
 
-  remove(id: string): User[] {
-    this.users = this.users.filter((user) => user.id !== id);
-    return this.users;
+  async remove(id: string) {
+    await this.prisma.user.delete({
+      where: { id },
+    });
+    return { message: 'User deleted' , success: true};
   }
 }

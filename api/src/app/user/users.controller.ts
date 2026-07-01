@@ -14,14 +14,14 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() dto: CreateUserDto) {
-    return this.usersService.create(dto);
-  }
+create(@Body() dto: CreateUserDto) {
+  return this.usersService.create(dto);
+}
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+@Get()
+findAll() {
+  return this.usersService.findAll();
+}
 
   @Get(':id')
   findOne(@Param('id') id: string) {

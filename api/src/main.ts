@@ -1,23 +1,35 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
-// import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
+
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  // const port = process.env.PORT || 3000;
-  // await app.listen(port);
+
+  const config = app.get(ConfigService);
+  config.get('database.url')
+  config.get('cors.origin')
+
+  app.setGlobalPrefix('api');
+
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: config.getOrThrow<string>('cors.origin'),
   });
 
-  await app.listen(process.env.PORT || 3000);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+  const port = config.getOrThrow<number>('app.port');
+
+  await app.listen(port);
+
+  Logger.log(`🚀 API running at http://localhost:${port}/api`);
 }
 
 bootstrap();
