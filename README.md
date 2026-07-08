@@ -1,5 +1,7 @@
 # Nx Angular + NestJS + Prisma Starter
 
+A self-hosted starter kit that lets small and medium businesses run their own website backend at a fraction of typical hosting costs. Built as a proof-of-concept, not a full production solution — a proper security layer is still needed before real-world deployment.
+
 A production-ready full-stack starter template built with **Nx Monorepo**, **Angular**, **NestJS**, **Prisma**, **PostgreSQL**, **Docker**, **Caddy**, and **Cloudflare Tunnel**.
 
 The project demonstrates a modern full-stack architecture with frontend, backend, shared libraries, database access, reverse proxy, containerization, and public deployment.
