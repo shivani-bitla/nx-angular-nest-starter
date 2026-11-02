@@ -1,289 +1,66 @@
 # Nx Angular + NestJS + Prisma Starter
 
-A self-hosted starter kit that lets small and medium businesses run their own website backend at a fraction of typical hosting costs. Built as a proof-of-concept, not a full production solution — a proper security layer is still needed before real-world deployment.
+Personal starter for small full-stack apps. One Nx workspace with an Angular frontend, a NestJS API, shared types, and Postgres via Prisma. Production compose puts Caddy in front and exposes it through a Cloudflare Tunnel.
 
-A production-ready full-stack starter template built with **Nx Monorepo**, **Angular**, **NestJS**, **Prisma**, **PostgreSQL**, **Docker**, **Caddy**, and **Cloudflare Tunnel**.
+Status: proof of concept. Only a `User` CRUD example. No auth yet (`JWT_SECRET` is in `.env.example` but unused).
 
-The project demonstrates a modern full-stack architecture with frontend, backend, shared libraries, database access, reverse proxy, containerization, and public deployment.
+## Layout
 
----
-
-## Features
-
-- Angular frontend
-- NestJS REST API
-- Nx Monorepo architecture
-- Shared DTOs and types
-- Prisma ORM
-- PostgreSQL
-- Dockerized development and production
-- Docker Compose orchestration
-- Caddy reverse proxy
-- Cloudflare Tunnel support
-- Environment-based configuration
-- Clean project structure
-
----
-
-# Tech Stack
-
-| Layer | Technology |
-|--------|------------|
-| Frontend | Angular |
-| Backend | NestJS |
-| Monorepo | Nx |
-| Language | TypeScript |
-| ORM | Prisma |
-| Database | PostgreSQL |
-| Reverse Proxy | Caddy |
-| Containers | Docker |
-| Public Access | Cloudflare Tunnel |
-
----
-
-# Project Structure
-
-```text
-.
-├── api/
-│   └── NestJS backend
-│
-├── web/
-│   └── Angular frontend
-│
-├── shared/
-│   └── Shared DTOs & Types
-│
-├── prisma/
-│   ├── schema.prisma
-│   └── migrations/
-│
-├── infra/
-│   ├── docker/
-│   ├── caddy/
-│   ├── cloudflare/
-│   └── github/
-│
-├── compose.dev.yml
-├── compose.prod.yml
-└── README.md
+```
+web/        Angular 21 app
+api/        NestJS 11 API, global prefix /api
+shared/     DTOs and models used by both
+prisma/     schema + migrations
+infra/
+  docker/     api.Dockerfile, web.Dockerfile
+  caddy/      Caddyfile.dev, Caddyfile.prod
+  cloudflare/ tunnel config (credentials.json is committed empty; never commit the real one)
+compose.dev.yml
+compose.prod.yml
 ```
 
----
+## Request flow (prod)
 
-# Architecture
-
-```text
-                    Internet
-                        │
-                        ▼
-              Cloudflare Tunnel
-                        │
-                        ▼
-                    Caddy Proxy
-                  ┌─────────────┐
-                  │             │
-                  ▼             ▼
-            Angular App     NestJS API
-                                   │
-                                   ▼
-                              Prisma ORM
-                                   │
-                                   ▼
-                              PostgreSQL
+```
+Cloudflare Tunnel -> Caddy :80 -> web (static)
+                               -> api :3000 -> Postgres
 ```
 
----
-
-# Getting Started
-
-## Clone
-
-```bash
-git clone https://github.com/<username>/<repository>.git
-
-cd <repository>
-```
-
----
-
-## Install Dependencies
+## Run locally
 
 ```bash
 npm install
-```
-
----
-
-## Configure Environment
-
-Create a `.env` file.
-
-Example:
-
-```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/fullstack?schema=public
-PORT=3000
-CORS_ORIGIN=http://localhost
-```
-
----
-
-## Run PostgreSQL
-
-```bash
+cp .env.example .env
 docker compose -f compose.dev.yml up postgres -d
+npx prisma migrate dev
+npx nx serve api      # http://localhost:3000/api
+npx nx serve web      # http://localhost:4200
 ```
 
----
-
-## Run Backend
-
-```bash
-npx nx serve api
-```
-
----
-
-## Run Frontend
-
-```bash
-npx nx serve web
-```
-
-Angular
-
-```
-http://localhost:4200
-```
-
-NestJS
-
-```
-http://localhost:3000/api
-```
-
----
-
-# Running Everything with Docker
+Everything in Docker:
 
 ```bash
 docker compose -f compose.dev.yml up --build
 ```
 
-Services
+## API
 
-| Service | URL |
-|----------|-----|
-| Angular | http://localhost |
-| API | http://localhost/api |
-| PostgreSQL | localhost:5432 |
+| Method | Path | |
+|---|---|---|
+| POST | /api/users | create |
+| GET | /api/users | list |
+| GET | /api/users/:id | get one |
+| DELETE | /api/users/:id | delete |
 
----
+## Adding a model
 
-# Database
+1. Add it to `prisma/schema.prisma`, run `npx prisma migrate dev --name <name>`.
+2. Add DTOs in `shared/src/dto`, export from `shared/src/index.ts`.
+3. Generate the Nest module: `npx nx g @nx/nest:resource <name> --project=api`.
 
-Generate Prisma Client
+## TODO
 
-```bash
-npx prisma generate
-```
-
-Create a migration
-
-```bash
-npx prisma migrate dev --name init
-```
-
-Open Prisma Studio
-
-```bash
-npx prisma studio
-```
-
----
-
-# API Endpoints
-
-## Users
-
-| Method | Endpoint |
-|---------|----------|
-| GET | /api/users |
-| POST | /api/users |
-| GET | /api/users/:id |
-| DELETE | /api/users/:id |
-
----
-
-# Deployment
-
-The application is containerized using Docker.
-
-Production architecture:
-
-```text
-Cloudflare
-      │
-      ▼
-Cloudflare Tunnel
-      │
-      ▼
-Caddy
- ├── Angular
- └── NestJS
-        │
-        ▼
-   PostgreSQL
-```
-
----
-
-# Development Workflow
-
-```bash
-git checkout -b feature/my-feature
-
-git commit
-
-git push
-```
-
----
-
-# Roadmap
-
-- Authentication (JWT)
-- Refresh Tokens
-- Role-Based Access Control
-- File Uploads
-- User Profiles
-- Dashboard
-- Unit Testing
-- E2E Testing
-- GitHub Actions CI/CD
-- Monitoring & Logging
-
----
-
-# Why Nx?
-
-This project uses Nx to:
-
-- Organize frontend and backend in a single workspace
-- Share DTOs and types
-- Simplify builds
-- Improve developer experience
-- Scale into larger applications
-
----
-
-# License
-
-MIT License
-
-
-environment:
-  DATABASE_URL: ${DATABASE_URL}
-
-  DATABASE_URL=postgresql://postgres:postgres@postgres:5432/fullstack?schema=public
+- Auth (JWT or session)
+- Move Postgres password in `compose.prod.yml` to env
+- Remove `nx-welcome.ts`
+- CI: lint + test on push
